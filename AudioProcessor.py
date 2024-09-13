@@ -7,7 +7,7 @@ import numpy as np
 class AudioProcessor:
 
     # constructor
-    def __init__(self, message_encoder, frame_length=1024):
+    def __init__(self, message_encoder, frame_length):
         self.frame_length = frame_length
         self.message_encoder = message_encoder
 
@@ -59,7 +59,7 @@ class AudioProcessor:
             print(f"Error during encoding: {str(e)}", file=sys.stderr)
             sys.exit(1)
 
-    def decode(self, audio_path, password):
+    def decode(self, audio_path):
         try:
             _, audio = wavfile.read(audio_path)
 
@@ -79,6 +79,7 @@ class AudioProcessor:
             message_bits = ''.join(['0' if abs(phase) < np.pi / 2 else '1' for phase in phases[32:32 + message_length]])
             decoded_message = self.message_encoder.bits_to_text(message_bits)
             print(f"Message decoded from audio file: {decoded_message}")
+            return decoded_message
 
         except Exception as e:
             print(f"Error during decoding: {str(e)}", file=sys.stderr)
