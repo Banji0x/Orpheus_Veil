@@ -7,9 +7,9 @@ import numpy as np
 class AudioProcessor:
 
     # constructor
-    def __init__(self, messageEncoder, frame_length=1024):
+    def __init__(self, message_encoder, frame_length=1024):
         self.frame_length = frame_length
-        self.messageEncoder = messageEncoder
+        self.message_encoder = message_encoder
 
     def encode(self, audio_path, encrypted_message, stego_audio_path):
         try:
@@ -20,7 +20,7 @@ class AudioProcessor:
 
             # splits the encrypted message to ASCII numbers
             # and converts the numbers to binary.
-            message_bits = self.messageEncoder.text_to_bits(encrypted_message)
+            message_bits = self.message_encoder.text_to_bits(encrypted_message)
             message_length = len(message_bits)
 
             if message_length > self.frame_length // 2 - 32:
