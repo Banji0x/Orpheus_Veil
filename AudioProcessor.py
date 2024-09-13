@@ -61,7 +61,25 @@ class AudioProcessor:
 
     def decode(self, audio_path, password):
         try:
-            sample_rate, audio = wavfile.read(audio_path)
+            _, audio = wavfile.read(audio_path)
+
+            if len(audio.shape) > 1:
+                audio = audio[:, 0]
+
+            # Extract phases by performing inverse fourier transform
+            frame = audio[:self.frame_length].astype(np.float32)
+            fft_frame = np.fft.fft(frame)
+            phases = np.angle(fft_frame)
+
+            # Decode message length
+            length_bits = ''.join(['0' if abs(phase) < np.pi / 2 else '1' for phase in phases[:32]])
+            message_length = int(length_bits, 2)
+
+            # Decode message
+            message_bits = ''.join(['0' if abs(phase) < np.pi / 2 else '1' for phase in phases[32:32 + message_length]])
+            decoded_message = self.message_encoder.bits_to_text(message_bits)
+            print(f"Message decoded from audio file: {decoded_message}")
+
         except Exception as e:
             print(f"Error during decoding: {str(e)}", file=sys.stderr)
             sys.exit(1)
